@@ -392,12 +392,12 @@ footer strong { color: var(--on-navy); }
       <div>
         <div class="eyebrow">On the market now</div>
         <h2>Every project selling in Dubai today, on Oltremare's own catalogue</h2>
-        <p>Current launches with prices, unit availability, payment plans, handover dates and floor plans, brokered by Oltremare Properties. Pick a project there, check its area and developer against the return record on this page, then book the call to confirm the unit.</p>
+        <p>Current launches with prices, unit availability, payment plans, handover dates and floor plans, brokered by Oltremare Properties, in your own client area. Pick a project there, check its area and developer against the return record on this page, then book the call to confirm the unit.</p>
       </div>
       <div class="wl-actions">
         <a class="btn brass" id="wl-open" href="#" target="_blank" rel="noopener">Open the catalogue</a>
         <a class="btn sm" href="#book">Book 30 min</a>
-        <span class="tiny">Prices and availability change daily; the call confirms them.</span>
+        <span class="tiny">Free client access: sign in with your email. Prices and availability change daily; the call confirms them.</span>
       </div>
     </div>
   </div>
@@ -694,6 +694,7 @@ const CONFIG = {
   TOP_N: 15,
   ALNAIR_WHITE_LABEL_URL: "https://offers.oltremare.pro",   // Oltremare's white-label catalogue (Alnair agency 15827) — catalogue links when set
   ALNAIR_PROJECT_LINK: "https://offers.oltremare.pro/en/dubai/project/{slug}",      // per-project link template on the white label ({slug} = Alnair project slug)
+  DEPLOY_EDIT_URL: "https://github.com/ahmedghorbel-prog/oltremare.pro/edit/main/index.html", // owner panel: where the copied site HTML is pasted to publish oltremare.pro
 };
 const D = JSON.parse(document.getElementById("site-data").textContent);
 const TYPES = ["Studio", "1BR", "2BR", "3BR", "TH/Villa 3BR", "TH/Villa 4BR", "TH/Villa 5BR"];
@@ -1179,7 +1180,7 @@ function localAnswer(q) {
   if (f.years.length && !f.areas.length && !f.devs.length) {
     f.years.slice(0, 2).forEach(y => { const r = D.purchase_year.find(x => x.year === y); if (r) out.push(`Bought in ${y}: ${pct(r.irr)} with rent (capital ${pct(r.cap_irr)}, plan ${pct(r.plan_irr)}), ${pp(r.loss, 0)} negative exits, median hold ${yrs(r.hold)} on ${n0(r.n)} resales. Best areas for ${y} buyers: ${D.areas.filter(a => a.years[y]?.n >= 50).sort((a, b) => b.years[y].irr - a.years[y].irr).slice(0, 5).map(a => `${a.name} ${pct(a.years[y].irr)}`).join("; ")}.`); });
   }
-  if (wantsSale && !live.length && CONFIG.ALNAIR_WHITE_LABEL_URL) out.push(`What is selling today: these tables are the resale record, not a listing. Every project currently on sale in Dubai, with prices, availability, payment plans and handover dates, is on Oltremare's catalogue: ${CONFIG.ALNAIR_WHITE_LABEL_URL} — check the area and developer here first, then confirm the unit on the call.`);
+  if (wantsSale && !live.length && CONFIG.ALNAIR_WHITE_LABEL_URL) out.push(`What is selling today: these tables are the resale record, not a listing. Every project currently on sale in Dubai, with prices, availability, payment plans and handover dates, is on Oltremare's catalogue: ${CONFIG.ALNAIR_WHITE_LABEL_URL} (free client access with your email) — check the area and developer here first, then confirm the unit on the call.`);
   if (!out.length) out.push(`I can answer from the record on areas, developers, projects, unit types, years of purchase, yields, payment plans and budgets. Try: "best 1-bedroom areas for yield", "Emaar vs Meraas", "Dubai Hills 2BR", or "AED 2M Golden Visa budget".`);
   return out.join("\n\n") + CTA_LINE;
 }
@@ -1203,7 +1204,7 @@ function buildDigest() {
   L.push("LAUNCH PREMIUM, apartments launched 2022–24 vs the area's ready median at launch (later IRR vs Dubai same years; resold below launch): below the area +5.4 pts, 8%; 0–30% above +1.1, 11%; 30–60% above −0.3, 13%; 60–100% above −2.1, 15%; 100%+ above −3.9, 26%. The median launch is priced 30% above the ready market. Developer persistence: half of past outperformance carries into the next projects (slope 0.55); bottom-quartile developers stayed bottom 67% of the time. Binghatti by launch cohort: 2016–19 9.4%, 2020–21 14.5%, 2022 24.1%, 2023 18.2%, 2024–25 10.4%; its 2026 launches sit 52% above the area while its resales trade +14%. Sobha Realty apartments: 3.9% on 3,392 pairs, −5.1 vs Dubai, driven by launch premiums of 131–171% above the area in 2024–26. 2026: new-contract apartment rents −3.1% on 2025, ready prices +3.7%; rent/sqm peaked Sep–Oct 2025, within 5% of the peak in Oct 2026. Handover pipeline: about 75k units due 2026, 108k in 2027, 99k in 2028, 62k in 2029. Golden Visa property route: AED 2M minimum property value; off-plan from approved developers and mortgaged units can qualify under conditions.");
   return L.join("\n");
 }
-const RULES = `You are the market analyst of Oltremare Properties, a Dubai real estate brokerage. Answer the visitor's question using ONLY the DATA below, which Oltremare computed from Dubai Land Department transactions and Ejari rent contracts (IRR of every traced resale, fees and net rent included; capital IRR = same without rent; "vs Dubai" = against other developers' units of the same type bought and resold in the same years and stage). Rules: cite the figures with their counts in brackets; distinguish capital IRR (areas, projects) from IRR with rent (developers, unit types); never invent a number, a project, a price or availability; if the data does not cover something, say so plainly and suggest what the data does show; past results are not a forecast and this is not investment advice, say so once at the end; be direct, specific and short (120–220 words unless a comparison needs a small table in plain text); reply in the language of the question (English, French, Italian or Arabic); when the question is about choosing, buying or timing, end with one sentence proposing the free 30-minute call with an Oltremare advisor (the booking form is on the page). When the DATA has an ON SALE NOW list, use it for questions about what is available, launches, prices today, payment plans and handover dates, and always pair a project with its launch-price band and the developer's record; never quote availability as guaranteed (units move daily; the call confirms). When the DATA has no ON SALE NOW list and the visitor asks what is for sale, about launches or prices today, say these tables are the resale record, not a listing, and point them to Oltremare's catalogue of projects on sale${CONFIG.ALNAIR_WHITE_LABEL_URL ? " at " + CONFIG.ALNAIR_WHITE_LABEL_URL + " (also linked on this page)" : " (linked on this page)"} and to the call. Do not discuss topics outside Dubai property investment.` + (CONFIG.SHOW_FULL_RANKINGS ? "" : ` This page is public: name developers and projects for their strong results and for figures the visitor explicitly asks about by name; for "worst", "avoid" or "laggard" questions give the Dubai averages and the range without naming the laggards, and say the full ranking is shared in the call.`);
+const RULES = `You are the market analyst of Oltremare Properties, a Dubai real estate brokerage. Answer the visitor's question using ONLY the DATA below, which Oltremare computed from Dubai Land Department transactions and Ejari rent contracts (IRR of every traced resale, fees and net rent included; capital IRR = same without rent; "vs Dubai" = against other developers' units of the same type bought and resold in the same years and stage). Rules: cite the figures with their counts in brackets; distinguish capital IRR (areas, projects) from IRR with rent (developers, unit types); never invent a number, a project, a price or availability; if the data does not cover something, say so plainly and suggest what the data does show; past results are not a forecast and this is not investment advice, say so once at the end; be direct, specific and short (120–220 words unless a comparison needs a small table in plain text); reply in the language of the question (English, French, Italian or Arabic); when the question is about choosing, buying or timing, end with one sentence proposing the free 30-minute call with an Oltremare advisor (the booking form is on the page). When the DATA has an ON SALE NOW list, use it for questions about what is available, launches, prices today, payment plans and handover dates, and always pair a project with its launch-price band and the developer's record; never quote availability as guaranteed (units move daily; the call confirms). When the DATA has no ON SALE NOW list and the visitor asks what is for sale, about launches or prices today, say these tables are the resale record, not a listing, and point them to Oltremare's catalogue of projects on sale${CONFIG.ALNAIR_WHITE_LABEL_URL ? " at " + CONFIG.ALNAIR_WHITE_LABEL_URL + " (free client access with an email; also linked on this page)" : " (linked on this page)"} and to the call. Do not discuss topics outside Dubai property investment.` + (CONFIG.SHOW_FULL_RANKINGS ? "" : ` This page is public: name developers and projects for their strong results and for figures the visitor explicitly asks about by name; for "worst", "avoid" or "laggard" questions give the Dubai averages and the range without naming the laggards, and say the full ranking is shared in the call.`);
 const DIGEST = buildDigest();
 const fullDigest = () => DIGEST + (window.ALNAIR_HOOKS ? "\n" + window.ALNAIR_HOOKS.digest() : "");
 const turns = [];
@@ -1272,8 +1273,52 @@ let db = null, user = null, canWrite = null;
   const parts = []; if (CONFIG.CONTACT_EMAIL) parts.push("Requests go to " + CONFIG.CONTACT_EMAIL); if (CONFIG.WHATSAPP) parts.push("WhatsApp +" + CONFIG.WHATSAPP);
   $("#foot-config").textContent = parts.join(" · ");
 })();
+const DEPLOY_HEAD = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="What a Dubai property actually earned: IRR of 118,238 registered resales by area, developer, project and unit type, with the live launch catalogue checked against the resale record. Oltremare Properties.">
+<meta property="og:title" content="Oltremare Market Facts — Dubai returns by area, developer and unit type">
+<meta property="og:description" content="The realised IRR of 118,238 Dubai resales, fees and rent included, with every current launch checked against the resale record. Ask the data; book a 30-minute call.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://oltremare.pro/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E1B2B'/%3E%3Cpath d='M12 40c6-10 14-10 20 0s14 10 20 0' fill='none' stroke='%23A8761F' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='22' r='6' fill='%230E7C86'/%3E%3C/svg%3E">
+<title>Oltremare Market Facts — Dubai returns by area, developer and unit type</title>
+<link rel="canonical" href="https://oltremare.pro/">
+<style>html{color-scheme:light dark}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+`;
+/* Builds the file published at oltremare.pro from this page's own served source: same content, a real document head. */
+async function buildDeployHtml() {
+  const src = await (await fetch(location.href, { cache: "no-store" })).text();
+  const start = src.indexOf('<meta name="claude:viewport-fit-sides"');
+  const lastIdx = src.lastIndexOf("if (window.ALNAIR_HOOKS && typeof select");
+  const END = "<\/script>";
+  const end = lastIdx < 0 ? -1 : src.indexOf(END, lastIdx);
+  if (start < 0 || end < 0) throw new Error("page markers not found");
+  return DEPLOY_HEAD + src.slice(start, end + END.length) + "\n</body>\n</html>\n";
+}
+function hash31(t) { let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return h; }
 function ownerPanel() {
   $("#owner-panel").hidden = false;
+  if (CONFIG.DEPLOY_EDIT_URL && !$("#deploy-copy")) {
+    const dep = document.createElement("div"); dep.style.marginTop = "14px";
+    dep.innerHTML = `<div class="eyebrow">Publish to oltremare.pro</div><p class="small muted" style="margin:6px 0 8px">Copy this page as the site file, then in the GitHub editor select all, paste and commit. The site updates within a minute.</p><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button type="button" class="btn sm" id="deploy-copy">Copy site HTML</button><a class="btn sm" target="_blank" rel="noopener" href="${esc(CONFIG.DEPLOY_EDIT_URL)}">Open the GitHub editor</a><span class="tiny" id="deploy-status"></span></div>`;
+    $("#owner-panel").appendChild(dep);
+    $("#deploy-copy").onclick = async () => {
+      const st = $("#deploy-status"); st.textContent = "Building…";
+      try {
+        const html = await buildDeployHtml();
+        let ok = false;
+        try { await navigator.clipboard.writeText(html); ok = true; } catch (_) { ok = false; }
+        if (!ok) { const ta = document.createElement("textarea"); ta.value = html; ta.style.cssText = "position:fixed;left:0;top:0;width:10px;height:10px;opacity:0"; document.body.appendChild(ta); ta.focus(); ta.select(); try { ok = document.execCommand("copy"); } catch (_) {} ta.remove(); }
+        st.textContent = (ok ? "Copied: " : "Copy blocked — ") + html.length.toLocaleString("en-US") + " chars · check " + hash31(html).toString(16);
+      } catch (e) { st.textContent = "Could not build the file: " + (e.message || e); }
+    };
+  }
   const list = $("#owner-list"); list.textContent = "Loading…";
   const timer = setTimeout(() => { if (list.textContent === "Loading…") list.textContent = "The request store can't be reached yet."; }, 10000);
   db.collection("bookings").orderBy("createdAt", "desc").limit(50).onSnapshot(snap => {
@@ -1461,6 +1506,5 @@ function norm2(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, 
 if (window.ALNAIR_HOOKS && typeof select === "function" && ST.sel) select(ST.sel.kind, ST.sel.id, true);
 
 </script>
-
 </body>
 </html>
