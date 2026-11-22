@@ -1210,6 +1210,8 @@ const fullDigest = () => DIGEST + (window.ALNAIR_HOOKS ? "\n" + window.ALNAIR_HO
 const turns = [];
 let ctl = null;
 
+/* escape, then turn https links into anchors (bot bubbles only) */
+function linkify(t) { return esc(t).replace(/https:\/\/[^\s<)]+/g, u => { const clean = u.replace(/[.,;:!?]+$/, ""); const tail = u.slice(clean.length); return `<a href="${clean}" target="_blank" rel="noopener">${clean.replace(/^https:\/\//, "")}</a>${tail}`; }); }
 function addMsg(role, text, { html = false } = {}) { const m = document.createElement("div"); m.className = "msg " + role; if (html) m.innerHTML = text; else m.textContent = text; $("#msgs").appendChild(m); $("#msgs").scrollTop = $("#msgs").scrollHeight; return m; }
 const SUGGESTIONS = ["Best 1-bedroom areas for yield in 2026", "Emaar vs Meraas, which one made its buyers more?", "Is a payment plan a good idea now?", "I have AED 2M for a Golden Visa, what fits?", "Dubai Hills Estate 2-bedroom: what did buyers earn?", "Which developers lost money for their buyers?"];
 $("#suggest").innerHTML = SUGGESTIONS.map(s => `<button type="button">${esc(s)}</button>`).join("");
@@ -1229,6 +1231,7 @@ async function ask(q) {
     try {
       const { text, truncated } = await sampleFn(input, { cache: false, signal: ctl.signal, modelTier: "default", onText: ({ text }) => { bubble.textContent = text; $("#msgs").scrollTop = $("#msgs").scrollHeight; } });
       turns.push({ role: "assistant", content: text });
+      bubble.innerHTML = linkify(text);
       if (truncated) bubble.append(" […]");
       bubble.insertAdjacentHTML("beforeend", `<span class="src">Live analysis on Oltremare's DLD tables · past results, not a forecast</span>`);
     } catch (e) {
@@ -1236,13 +1239,13 @@ async function ask(q) {
       else {
         turns.pop();
         if (e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "not_declared" || e.code === "capability_disabled")) { sampleFn = null; sampleState = "off"; setAiStatus(); }
-        bubble.textContent = local;
+        bubble.innerHTML = linkify(local);
         bubble.insertAdjacentHTML("beforeend", `<span class="src">${e && e.code === "rate_limited" ? "The live analyst is busy; this is the answer from the tables." : "Answer from the tables"} · past results, not a forecast</span>`);
       }
     }
     $("#stop").hidden = true; ctl = null;
   } else {
-    const b = addMsg("bot", local);
+    const b = addMsg("bot", linkify(local), { html: true });
     b.insertAdjacentHTML("beforeend", `<span class="src">Answer from Oltremare's DLD tables · past results, not a forecast</span>`);
   }
   $("#send").disabled = false;
